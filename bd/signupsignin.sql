@@ -1,6 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `signupsignin` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `signupsignin`;
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.20, for Win32 (AMD64)
 --
 -- Host: localhost    Database: signupsignin
 -- ------------------------------------------------------
@@ -18,6 +16,21 @@ USE `signupsignin`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `signin`
+--
+
+DROP TABLE IF EXISTS `signin`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `signin` (
+  `lastSignIn` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `userId` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`userId`,`lastSignIn`),
+  CONSTRAINT `signin_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `usertolog` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `signin`
 --
 
@@ -27,6 +40,26 @@ LOCK TABLES `signin` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `usertolog`
+--
+
+DROP TABLE IF EXISTS `usertolog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `usertolog` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `login` varchar(30) NOT NULL DEFAULT '',
+  `email` varchar(100) NOT NULL,
+  `fullName` varchar(50) NOT NULL,
+  `status` enum('enabled','disabled') NOT NULL,
+  `privilege` enum('user','admin') NOT NULL,
+  `password` varchar(30) NOT NULL DEFAULT '',
+  `lastPasswordChange` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `usertolog`
 --
 
@@ -34,14 +67,6 @@ LOCK TABLES `usertolog` WRITE;
 /*!40000 ALTER TABLE `usertolog` DISABLE KEYS */;
 /*!40000 ALTER TABLE `usertolog` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'signupsignin'
---
-
---
--- Dumping routines for database 'signupsignin'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -52,4 +77,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-10-20  9:50:34
+-- Dump completed on 2022-10-21  9:21:09
