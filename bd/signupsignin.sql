@@ -49,13 +49,13 @@ DROP TABLE IF EXISTS `usertolog`;
 CREATE TABLE `usertolog` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `login` varchar(30) NOT NULL DEFAULT '',
-  `email` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL DEFAULT '',
   `fullName` varchar(50) NOT NULL,
   `status` enum('enabled','disabled') NOT NULL,
   `privilege` enum('user','admin') NOT NULL,
   `password` varchar(30) NOT NULL DEFAULT '',
   `lastPasswordChange` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`,`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -77,4 +77,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-10-21  9:21:09
+-- Dump completed on 2022-10-21 10:44:40
