@@ -24,7 +24,7 @@ public class Pool {
     private Stack<Connection> usedConnections;
 
     protected ResourceBundle configFile = 
-        ResourceBundle.getBundle("dataAcess.config");;
+        ResourceBundle.getBundle("dataAccess.config");;
     protected String url = configFile.getString("URL"),
         user = configFile.getString("USER"),
         pass = configFile.getString("PASSWORD");
@@ -33,9 +33,18 @@ public class Pool {
      * Create the Pool object
      *
      * @param n number of freeConnections
+     * @throws exceptions.ServerException
      */
     public Pool(int n) throws ServerException {
         this.createConnections(n);
+    }
+
+    public int getFreeConnectionCount() {
+	return freeConnections.size();
+    }
+    
+    public int getUsedConnectionCount() {
+	return usedConnections.size();
     }
     
     /**
@@ -44,14 +53,19 @@ public class Pool {
      * @throws ServerException 
      */
     private void createConnections(int n) throws ServerException {
+	//Create the requested new connections
         for (int i = 0; i < n; i++) {
             try {
-                if(freeConnections.size() >= CONNECTION_LIMIT) throw new ServerException();
-                freeConnections.add(DriverManager.getConnection(url, user, pass));
+		Connection newCon = DriverManager.getConnection(url, user, pass);
+		if(newCon == null)
+			throw new ServerException();
+                if(freeConnections.size() + usedConnections.size() >= CONNECTION_LIMIT) 
+			throw new ServerException();
             } catch (SQLException e) {
                 //TODO Exception parametrization
                 throw new ServerException();
             } catch (ServerException e) {
+                //TODO Exception parametrization
                 while(freeConnections.size() > CONNECTION_LIMIT)
                     freeConnections.pop();
             }
@@ -99,7 +113,7 @@ public class Pool {
      * Kill all connections
      * @throws ServerException 
      */
-    public void killConnections() throws ServerException {
+    public void killAllConnections() throws ServerException {
         //Get all open connections
         List<Connection> allCons = this.getAllConnections();
         //Iterate over all connections and close them
@@ -114,6 +128,10 @@ public class Pool {
         cleanClosedConnections();
     }
     
+    /**
+     * Removes all the closed connections from both
+     * free and used collections
+     */
     private void cleanClosedConnections() {
         //Remove closed free connections
         freeConnections.forEach((con) -> {
