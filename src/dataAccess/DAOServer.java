@@ -99,6 +99,7 @@ public class DAOServer extends MasterConnection implements Userable {
            LOGGER.severe(e.getMessage());
         } finally {
            LOGGER.info("Server SignUp close connection");
+           closeConnection();
         }
     }
 
