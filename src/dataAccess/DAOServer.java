@@ -50,7 +50,7 @@ public class DAOServer extends MasterConnection implements Userable {
             closeConnection();
         }
        return user;
-        // TODO
+
     }
 
     /**
