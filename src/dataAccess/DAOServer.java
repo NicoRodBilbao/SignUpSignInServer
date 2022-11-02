@@ -25,10 +25,11 @@ public class DAOServer extends MasterConnection implements Userable {
      * @return user
      */
     @Override
-    public User login(String username) {
+     public User login(String username) {
         User user = null;
         try {
             openConnection();
+            LOGGER.info("Server Login open connection");
             stmt = con.prepareStatement(searchUser);
             stmt.setString(1, username);
             rs = stmt.executeQuery();
@@ -45,12 +46,13 @@ public class DAOServer extends MasterConnection implements Userable {
                 throw new UserAlreadyExistsException();
             }
         } catch (Exception e) {
-            e.getMessage();
+            LOGGER.severe(e.getMessage());
         } finally {
+            LOGGER.info("Server Login close connection");
             closeConnection();
         }
        return user;
-
+        // TODO
     }
 
     /**
@@ -60,8 +62,10 @@ public class DAOServer extends MasterConnection implements Userable {
      */
     @Override
     public void signUp(User user) {
+        
         try {
             openConnection();
+            LOGGER.info("Server SignUp open connection");
             //we search if there is an user with the same id
             stmt = con.prepareStatement(searchUser);
             stmt.setInt(1, user.getId());
@@ -92,9 +96,9 @@ public class DAOServer extends MasterConnection implements Userable {
                 }
             }
         } catch (Exception e) {
-            e.getMessage();
+           LOGGER.severe(e.getMessage());
         } finally {
-            closeConnection();
+           LOGGER.info("Server SignUp close connection");
         }
     }
 
