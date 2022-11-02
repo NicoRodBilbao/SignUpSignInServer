@@ -5,6 +5,7 @@ import model.*;
 import interfaces.Userable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 
 /**
@@ -12,9 +13,9 @@ import java.time.LocalDateTime;
  * @author Emil Nuñez
  */
 public class DAOServer extends MasterConnection implements Userable {
-
-    final String createUser = "INSERT INTO usertolog (id, login, email, fullname, status, privilege, lastPasswordChange) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    final String searchUser = "SELECT * FROM usertolog WHERE id = ?";
+    final protected  Logger LOGGER = Logger.getLogger(DAOServer.class.getName());
+    final String createUser = "INSERT INTO usertolog (login, email, fullname, status, privilege, password, lastPasswordChange) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    final String searchUser = "SELECT * FROM usertolog WHERE login = ?";
     final String searchEmail = "SELECT * FROM usertolog WHERE email = ?";
     final String searchUserFromUsername = "SELECT * FROM usertolog WHERE login = ?";
 
@@ -38,8 +39,8 @@ public class DAOServer extends MasterConnection implements Userable {
                        rs.getString(2), 
                        rs.getString(3), 
                        rs.getString(4), 
-                       UserStatus.valueOf(rs.getString(5)), 
-                       UserPrivilege.valueOf(rs.getString(6)),
+                       UserStatus.valueOf(rs.getString(5).toUpperCase()), 
+                       UserPrivilege.valueOf(rs.getString(6).toUpperCase()),
                        rs.getString(7));
                 
             } else {
@@ -86,14 +87,15 @@ public class DAOServer extends MasterConnection implements Userable {
                 } else {
                     //Don't exist any user with that id or email, we can create a new one.
                     stmt = con.prepareStatement(createUser);
-                    stmt.setInt(1, user.getId());
-                    stmt.setString(2, user.getLogin());
-                    stmt.setString(3, user.getEmail());
-                    stmt.setString(4, user.getFullName());
-                    stmt.setString(5, user.getStatus().toString());  //probar a ver si funciona, no tengo ni p idea
+                    stmt.setString(1, user.getLogin());
+                    stmt.setString(2, user.getEmail());
+                    stmt.setString(3, user.getFullName());
+                    stmt.setString(4, user.getStatus().toString());  //probar a ver si funciona, no tengo ni p idea
                     stmt.setString(5, user.getPrivilege().toString()); //igual que arriba            
-                    stmt.setString(7, user.getPassword());
-                    stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
+
+                    stmt.setString(6, user.getPassword());
+                    stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+
                     stmt.executeUpdate();
                 }
             }

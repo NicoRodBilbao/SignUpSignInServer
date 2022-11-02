@@ -14,6 +14,7 @@ public class Application {
      */
     public static void main(String[] args) {
        ServerThread thread  = new ServerThread();
+       thread.start();
     }
     
 }
