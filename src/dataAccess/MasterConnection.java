@@ -13,7 +13,7 @@ public abstract class MasterConnection {
     protected ResultSet rs;
     // access to the configuration file.
     protected ResourceBundle configFile = 
-        ResourceBundle.getBundle("dataAcess.config");;
+        ResourceBundle.getBundle("dataAccess.config");
     protected String 
         url = configFile.getString("URL"),
         user = configFile.getString("USER"),
