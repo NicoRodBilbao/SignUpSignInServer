@@ -25,7 +25,7 @@ public class DAOServer extends MasterConnection implements Userable {
      * @return user
      */
     @Override
-     public User login(String username) {
+      public User login(String username) {
         User user = null;
         try {
             openConnection();
@@ -43,7 +43,8 @@ public class DAOServer extends MasterConnection implements Userable {
                        rs.getString(7));
                 
             } else {
-                throw new UserAlreadyExistsException();
+                 //if user does not exist, throw the UserDoesNotExistException exception
+                throw new UserDoesNotExistException();
             }
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
@@ -72,6 +73,7 @@ public class DAOServer extends MasterConnection implements Userable {
             rs = stmt.executeQuery();
 
             if (rs.next()) {
+                //if user exist, throw the UserAlreadyExistsException exception
                 throw new UserAlreadyExistsException();
             } else {
                 //we search if there is an user with the same email
@@ -79,6 +81,7 @@ public class DAOServer extends MasterConnection implements Userable {
                 stmt.setString(1, user.getEmail());
                 rs = stmt.executeQuery();
                 if (rs.next()) {
+                    //if the email exist, throw the EmailAlreadyExistsException exception
                     throw new EmailAlreadyExistsException();
                 } else {
                     //Don't exist any user with that id or email, we can create a new one.
@@ -91,7 +94,6 @@ public class DAOServer extends MasterConnection implements Userable {
                     stmt.setString(5, user.getPrivilege().toString()); //igual que arriba            
                     stmt.setString(7, user.getPassword());
                     stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
-
                     stmt.executeUpdate();
                 }
             }
