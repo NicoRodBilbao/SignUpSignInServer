@@ -1,13 +1,16 @@
 package dataAccess;
 
+import exceptions.ServerException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import pool.Pool;
 
 public abstract class MasterConnection {
+    private static Pool pool = new Pool();
     protected Connection con;
     protected PreparedStatement stmt;
     protected ResultSet rs;
@@ -23,8 +26,9 @@ public abstract class MasterConnection {
     protected void openConnection() throws SQLException {
         con = null;
         try {
-            con = DriverManager.getConnection(url, user, pass);
-        } catch (SQLException e) {
+            //con = DriverManager.getConnection(url, user, pass);
+            con = pool.getConnection();
+        } catch (ServerException e) {
             throw new SQLException("Error al conectar con la base de datos.");
         }
     }

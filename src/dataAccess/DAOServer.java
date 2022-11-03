@@ -24,9 +24,12 @@ public class DAOServer extends MasterConnection implements Userable {
      * 
      * @param username
      * @return user
+     * @throws exceptions.UserDoesNotExistException
+     * @throws exceptions.IncorrectUserException
+     * @throws exceptions.IncorrectPasswordException
      */
     @Override
-      public User login(String username) {
+      public User login(String username) throws UserDoesNotExistException, IncorrectUserException, IncorrectPasswordException {
         User user = null;
         try {
             openConnection();
@@ -61,9 +64,11 @@ public class DAOServer extends MasterConnection implements Userable {
      * Get a user from userable signUp and creates it in the database
      * 
      * @param user 
+     * @throws exceptions.EmailAlreadyExistsException 
+     * @throws exceptions.UserAlreadyExistsException 
      */
     @Override
-    public void signUp(User user) {
+    public void signUp(User user)throws EmailAlreadyExistsException, UserAlreadyExistsException {
         
         try {
             openConnection();

@@ -35,7 +35,6 @@ public class Controller {
                 }
             }
         }
-
     }
 
     private ServerThread getThread() {
@@ -53,9 +52,13 @@ public class Controller {
             return thr;
         
     }
-    public void run(){
-        this.getThread();
+    
+    private void startAllThreads() {
+        freeThreads.forEach(thr -> thr.start());
     }
-    
-    
+   
+    public void run(){
+        this.createThread(1);
+        this.startAllThreads();
+    }  
 }
