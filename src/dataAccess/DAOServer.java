@@ -97,10 +97,8 @@ public class DAOServer extends MasterConnection implements Userable {
                     stmt.setString(3, user.getFullName());
                     stmt.setString(4, user.getStatus().toString());  //probar a ver si funciona, no tengo ni p idea
                     stmt.setString(5, user.getPrivilege().toString()); //igual que arriba            
-
                     stmt.setString(6, user.getPassword());
                     stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
-
                     stmt.executeUpdate();
                 }
             }
