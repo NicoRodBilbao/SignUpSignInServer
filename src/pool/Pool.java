@@ -28,31 +28,66 @@ public class Pool {
 			pass = configFile.getString("PASSWORD");
 
 	protected int connectionLimit = Integer.parseInt(configFile.getString("CONNECTION_LIMIT"));
+	
+	private static Pool pool = null;
 
 	/**
 	 * Create the Pool object
-	 *
+	 * specifying the initial number of connections
 	 * @param n number of freeConnections
 	 * @throws exceptions.ServerException
 	 */
-	public Pool(int n) throws ServerException {
+	private Pool(int n) throws ServerException {
 		this.createConnections(n);
 	}
 
-	public Pool() {
+	/**
+	 * Create the Pool object
+	 */
+	private Pool() {
+	}
+	
+	/*
+	* Returns the singleton class
+	* if it doesn't exist it's created
+	* @return the pool object
+	*/
+	public Pool getPool() {
+		if(pool == null)
+			pool = new Pool();
+		return pool;
 	}
 
+	/*
+	* Returns the singleton class
+	* if it doesn't exist it's created
+	* @return the pool object
+	* @param n number of initial connections
+	*/
+	public Pool getPool(int n) throws ServerException {
+		if(pool == null)
+			pool = new Pool(n);
+		return pool;
+	}
+
+	/**
+	* Returns the amount of free connections
+	* @return number of free connections
+	*/
 	public int getFreeConnectionCount() {
 		return freeConnections.size();
 	}
 
+	/**
+	* Returns the amount of used connections
+	* @return number of used connections
+	*/
 	public int getUsedConnectionCount() {
 		return usedConnections.size();
 	}
 
 	/**
 	 * Creates connections, always respecting the connection limit
-	 * 
 	 * @param n
 	 * @throws ServerException
 	 */
