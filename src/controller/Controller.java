@@ -4,6 +4,7 @@ import exceptions.ServerException;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Logger;
+import signupsigninserver.TextInterface;
 
 /**
  * This class will create and manage threads in order to access the databse from
@@ -17,6 +18,8 @@ public class Controller {
     private static ArrayList<ServerThread> usedThreads = new ArrayList<ServerThread>();
     private Integer threadLimit = 10;
     protected final Logger LOGGER = Logger.getLogger(Controller.class.getName());
+    public static boolean isRunning = true;
+    
 
     private void createThread(int n) {
 
@@ -56,9 +59,27 @@ public class Controller {
     private void startAllThreads() {
         freeThreads.forEach(thr -> thr.start());
     }
+    
+    private void stopAllThreads(){
+        freeThreads.forEach(thr -> thr.interrupt());
+        usedThreads.forEach(thr -> thr.interrupt());
+    }
+    
+    private void removeDeadThreads() {
+        freeThreads.removeIf(thr -> !thr.isAlive());
+        usedThreads.removeIf(thr -> !thr.isAlive());
+    }
    
     public void run(){
         this.createThread(1);
         this.startAllThreads();
+        TextInterface tui = new TextInterface();
+        tui.start();
+        while(isRunning){
+            if(freeThreads.size() < 1 && usedThreads.size() < 10)
+                this.createThread(1);
+            this.removeDeadThreads();
+        }
+        this.stopAllThreads();
     }  
 }

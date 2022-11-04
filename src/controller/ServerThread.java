@@ -2,6 +2,8 @@ package controller;
 
 import dataAccess.DAOServer;
 import exceptions.EmailAlreadyExistsException;
+import exceptions.IncorrectPasswordException;
+import exceptions.IncorrectUserException;
 import exceptions.UserAlreadyExistsException;
 import exceptions.UserDoesNotExistException;
 import java.io.IOException;
@@ -33,6 +35,7 @@ public class ServerThread extends Thread {
     private ObjectOutputStream auxOut;
     private InputStream input;
     private ObjectInputStream auxIn;
+    public static boolean active = true;
 
     public ServerThread() {
         try {
@@ -56,12 +59,18 @@ public class ServerThread extends Thread {
         LOGGER.info("Starting controller.");
         try {
 
-            while (true) {
+            while (active) {
                 // Receives a Package 
                 pack = (model.Package) auxIn.readObject();
                 // Login case
                 if (pack.getAction().equals(Action.LOGIN)) {
-                    pack.setUser(new DAOServer().login(pack.getUser().getLogin()));
+                    try {
+                        pack.setUser(new DAOServer().login(pack.getUser().getLogin()));
+                    } catch (IncorrectUserException ex) {
+                        Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IncorrectPasswordException ex) {
+                        Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     pack.setMessage(Message.OK);
                 }
                 // Signup case
@@ -69,13 +78,14 @@ public class ServerThread extends Thread {
                     new DAOServer().signUp(pack.getUser());
                     pack.setMessage(Message.OK);
                 }
+                active = false;
                 auxOut.writeObject(pack);
             }
         } catch (IOException e) { // IOException
             LOGGER.severe("IOExcetion regarding the socket." + e.getMessage());
         } catch (ClassNotFoundException e) { // ClassNotFoundException
             LOGGER.severe("The class was not found." + e.getMessage());
-        }/* catch (UserDoesNotExistException e) { // The user couldn't be found on the database
+        } catch (UserDoesNotExistException e) { // The user couldn't be found on the database
             LOGGER.severe(e.getMessage());
             pack.setMessage(Message.USERDOESNOTEXIST);
         } catch(EmailAlreadyExistsException e) { // The email already exists on the database
@@ -84,7 +94,7 @@ public class ServerThread extends Thread {
         } catch (UserAlreadyExistsException e) { // The user already exists on the database
             LOGGER.severe(e.getMessage());
             pack.setMessage(Message.USERALREADYEXISTS);
-        } */ finally {
+        }  finally {
             try {
                 auxOut.writeObject(pack);
                 skClient.close();
@@ -94,5 +104,9 @@ public class ServerThread extends Thread {
         }
 
     }
+    public void stopThread(){
+        this.active = false;
+    }
+    
 
 }
