@@ -3,9 +3,11 @@ package dataAccess;
 import exceptions.*;
 import model.*;
 import interfaces.Userable;
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.logging.Logger;
+import pool.Pool;
 
 
 /**
@@ -71,7 +73,7 @@ public class DAOServer extends MasterConnection implements Userable {
     public void signUp(User user)throws EmailAlreadyExistsException, UserAlreadyExistsException {
         
         try {
-            openConnection();
+            Connection con = Pool.getConnection();
             LOGGER.info("Server SignUp open connection");
             //we search if there is an user with the same id
             stmt = con.prepareStatement(searchUser);
