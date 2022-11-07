@@ -7,6 +7,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * This test class tests that the factory creates an Interface that's an intstance
+ * of a data access object.
  *
  * @author Nicolás Rodríguez
  */
