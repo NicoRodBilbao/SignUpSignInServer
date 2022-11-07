@@ -52,7 +52,7 @@ public class Pool {
 	* if it doesn't exist it's created
 	* @return the pool object
 	*/
-	public Pool getPool() {
+	public static Pool getPool() {
 		if(pool == null)
 			pool = new Pool();
 		return pool;
@@ -64,7 +64,7 @@ public class Pool {
 	* @return the pool object
 	* @param n number of initial connections
 	*/
-	public Pool getPool(int n) throws ServerException {
+	public static Pool getPool(int n) throws ServerException {
 		if(pool == null)
 			pool = new Pool(n);
 		return pool;

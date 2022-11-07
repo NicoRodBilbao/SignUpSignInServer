@@ -4,8 +4,11 @@ import exceptions.*;
 import model.*;
 import interfaces.Userable;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import pool.Pool;
 
@@ -14,12 +17,17 @@ import pool.Pool;
  *
  * @author Emil Nuñez
  */
-public class DAOServer extends MasterConnection implements Userable {
+public class DAOServer implements Userable {
     final protected  Logger LOGGER = Logger.getLogger(DAOServer.class.getName());
     final String createUser = "INSERT INTO usertolog (login, email, fullname, status, privilege, password, lastPasswordChange) VALUES (?, ?, ?, ?, ?, ?, ?)";
     final String searchUser = "SELECT * FROM usertolog WHERE login = ?";
     final String searchEmail = "SELECT * FROM usertolog WHERE email = ?";
     final String searchUserFromUsername = "SELECT * FROM usertolog WHERE login = ?";
+    
+    private static Pool pool = Pool.getPool();
+    private  Connection con;
+    private PreparedStatement stmt;
+    private ResultSet rs;
 
     /**
      * Get a username from userable login and return the user from the database
@@ -34,7 +42,7 @@ public class DAOServer extends MasterConnection implements Userable {
       public User login(String username) throws UserDoesNotExistException, IncorrectUserException, IncorrectPasswordException {
         User user = null;
         try {
-            openConnection();
+            con = pool.getConnection();
             LOGGER.info("Server Login open connection");
             stmt = con.prepareStatement(searchUser);
             stmt.setString(1, username);
@@ -56,7 +64,11 @@ public class DAOServer extends MasterConnection implements Userable {
             LOGGER.severe(e.getMessage());
         } finally {
             LOGGER.info("Server Login close connection");
-            closeConnection();
+            try {
+                pool.returnConnection(con);
+            } catch (ServerException ex) {
+                Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
        return user;
         // TODO
@@ -73,7 +85,7 @@ public class DAOServer extends MasterConnection implements Userable {
     public void signUp(User user)throws EmailAlreadyExistsException, UserAlreadyExistsException {
         
         try {
-            Connection con = Pool.getConnection();
+            con = pool.getConnection();
             LOGGER.info("Server SignUp open connection");
             //we search if there is an user with the same id
             stmt = con.prepareStatement(searchUser);
@@ -108,7 +120,11 @@ public class DAOServer extends MasterConnection implements Userable {
            LOGGER.severe(e.getMessage());
         } finally {
            LOGGER.info("Server SignUp close connection");
-           closeConnection();
+            try {
+                pool.returnConnection(con);
+            } catch (ServerException ex) {
+                Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
