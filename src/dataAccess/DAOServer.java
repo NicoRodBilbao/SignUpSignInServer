@@ -23,6 +23,10 @@ public class DAOServer implements Userable {
     final String searchUser = "SELECT * FROM usertolog WHERE login = ?";
     final String searchEmail = "SELECT * FROM usertolog WHERE email = ?";
     final String searchUserFromUsername = "SELECT * FROM usertolog WHERE login = ?";
+    final String createLogIn = "INSERT INTO signin (lastSignIn, userId) VALUES (?, ?)";
+    final String searchLogIn = "SELECT * FROM signin WHERE userId = ?";
+    final String deleteLogIn = "DELETE from signin where userId = ? ORDER BY lastSignIn ASC LIMIT 1;";
+    final String getLogInNumber = "SELECT COUNT(*) FROM signin WHERE userId = ?;"; 
     
     private static Pool pool = Pool.getPool();
     private  Connection con;
@@ -55,11 +59,23 @@ public class DAOServer implements Userable {
                        UserStatus.valueOf(rs.getString(5).toUpperCase()), 
                        UserPrivilege.valueOf(rs.getString(6).toUpperCase()),
                        rs.getString(7));
-                
-            } else {
-                 //if user does not exist, throw the UserDoesNotExistException exception
-                throw new UserDoesNotExistException();
-            }
+                stmt = con.prepareStatement(searchLogIn);
+                stmt.setString(1, user.getID());
+                rs = stmt.executeQuery();
+                 if (rs.next()) {
+                    stmt = con.prepareStatement(getLogInNumber);
+                    stmt.setString(1, user.getID());
+                    rs = stmt.executeQuery();
+                    if (rs.next()) {
+                        stmt = con.prepareStatement(deleteLogIn);
+                        stmt.setString(1, user.getID());
+                        rs = stmt.executeQuery();
+                    }
+                 }
+                stmt = con.prepareStatement(getLogInNumber);
+                stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+                stmt.setString(2, user.getID());
+                rs = stmt.executeQuery();
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
         } finally {
