@@ -1,8 +1,15 @@
 package controller;
 
 import exceptions.ServerException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import signupsigninserver.TextInterface;
 
@@ -19,13 +26,22 @@ public class Controller {
     private Integer threadLimit = 10;
     protected final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     public static boolean isRunning = true;
+    private ServerSocket serverSocket;
+    private Socket socket;
+    private InputStream input;
+    private ObjectInputStream auxIn;
+    private model.Package pack;
+    
+    protected ResourceBundle configFile = ResourceBundle.getBundle("dataAccess.config");
+
+    protected Integer PORT = Integer.parseInt(configFile.getString("PORT"));
     
 
     private void createThread(int n) {
 
         for (int i = 0; i < n; i++) {
             try {
-                ServerThread newThread = new ServerThread();
+                ServerThread newThread = new ServerThread(serverSocket, socket, pack);
                 freeThreads.push(newThread);
                 if (freeThreads.size() + usedThreads.size() >= threadLimit) {
                     throw new ServerException();
@@ -71,15 +87,34 @@ public class Controller {
     }
    
     public void run(){
-        this.createThread(1);
-        this.startAllThreads();
-        TextInterface tui = new TextInterface();
-        tui.start();
-        while(isRunning){
-            if(freeThreads.size() < 1 && usedThreads.size() < 10)
-                this.createThread(1);
-            this.removeDeadThreads();
+        try {
+            serverSocket = new ServerSocket(PORT);
+            socket = serverSocket.accept();
+            TextInterface tui = new TextInterface();
+            tui.start();
+            input = socket.getInputStream();
+            auxIn = new ObjectInputStream(input);
+            while(isRunning){
+                
+                pack = (model.Package) auxIn.readObject();
+                if(pack != null){
+                    this.createThread(1);
+                    ServerThread thr = freeThreads.get(0);
+                    thr.start();
+                }else{
+                    LOGGER.info("Package is null");
+                }
+                
+                this.removeDeadThreads();
+            }
+            socket.close();
+            serverSocket.close();
+            this.stopAllThreads();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.stopAllThreads();
     }  
 }
