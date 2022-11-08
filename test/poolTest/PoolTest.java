@@ -1,22 +1,31 @@
 package poolTest;
 
 import org.junit.Test;
+
+import pool.Pool;
+
+import java.sql.Connection;
+
 import static org.junit.Assert.*;
+
 /**
  * This test class tests that the connection pool functions properly.
  *
  * @author Nicolas Rodriguez
  */
 public class PoolTest {
-    
+
     public PoolTest() {
     }
-
+ 
     /**
      * Test of getPool method, of class Pool.
      */
     @Test
     public void testGetPool_0args() {
+        Pool pool = Pool.getPool();
+        assertNotNull(pool);
+        AssertEquals(0, pool.getFreeConnectionCount());
     }
 
     /**
@@ -24,6 +33,9 @@ public class PoolTest {
      */
     @Test
     public void testGetPool_int() throws Exception {
+        Pool pool = Pool.getPool(2);
+        assertNotNull(pool);
+        assertEquals(2, pool.getFreeConnectionCount());
     }
 
     /**
@@ -31,6 +43,9 @@ public class PoolTest {
      */
     @Test
     public void testGetFreeConnectionCount() {
+        Pool pool = Pool.getPool();
+        assertNotNull(pool);
+        assertEquals(2, pool.getFreeConnectionCount());
     }
 
     /**
@@ -38,6 +53,9 @@ public class PoolTest {
      */
     @Test
     public void testGetUsedConnectionCount() {
+        Pool pool = Pool.getPool();
+        assertNotNull(pool);
+        assertEquals(0, pool.getFreeConnectionCount());
     }
 
     /**
@@ -45,6 +63,10 @@ public class PoolTest {
      */
     @Test
     public void testGetConnection() throws Exception {
+        Pool pool = Pool.getPool();
+        assertNotNull(pool);
+        assertNotNull(pool.getConnection());
+        assertEquals(1, pool.getUsedConnectionCount());
     }
 
     /**
@@ -52,6 +74,11 @@ public class PoolTest {
      */
     @Test
     public void testReturnConnection() throws Exception {
+        Pool pool = Pool.getPool();
+        Connection con = pool.getConnection();
+        assertEquals(0, pool.getFreeConnectionCount());
+        pool.returnConnection();
+        assertEquals(1, pool.getFreeConnectionCount());
     }
 
     /**
@@ -59,7 +86,9 @@ public class PoolTest {
      */
     @Test
     public void testKillAllConnections() throws Exception {
+        Pool pool = Pool.getPool();
+        assertEquals(0, pool.getFreeConnectionCount());
+        assertEquals(0, pool.getUsedConnectionCount());
     }
-    
-}
 
+}
