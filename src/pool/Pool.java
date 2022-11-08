@@ -74,7 +74,7 @@ public class Pool {
 	* Returns the amount of free connections
 	* @return number of free connections
 	*/
-	public int getFreeConnectionCount() {
+	public synchronized int getFreeConnectionCount() {
 		return freeConnections.size();
 	}
 
@@ -82,7 +82,7 @@ public class Pool {
 	* Returns the amount of used connections
 	* @return number of used connections
 	*/
-	public int getUsedConnectionCount() {
+	public synchronized int getUsedConnectionCount() {
 		return usedConnections.size();
 	}
 
@@ -121,7 +121,7 @@ public class Pool {
 	 * @return Connection a connection to be used
 	 * @throws ServerException
 	 */
-	public Connection getConnection() throws ServerException {
+	public synchronized Connection getConnection() throws ServerException {
 		try {
 			// Check if there are any free connections
 			// create one if the stack is empty
@@ -146,7 +146,7 @@ public class Pool {
 	 * 
 	 * @param Connection
 	 */
-	public void returnConnection(Connection con) throws ServerException {
+	public synchronized void returnConnection(Connection con) throws ServerException {
 		try {
 			if(con.isClosed())
 				// TODO Exception parametrization
@@ -180,7 +180,7 @@ public class Pool {
 	 * 
 	 * @throws ServerException
 	 */
-	public void killAllConnections() throws ServerException {
+	public synchronized void killAllConnections() throws ServerException {
 		// Get all open connections
 		List<Connection> allCons = this.getAllConnections();
 		// Iterate over all connections and close them
