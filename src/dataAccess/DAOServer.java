@@ -58,21 +58,15 @@ public class DAOServer implements Userable {
                         UserStatus.valueOf(rs.getString(5).toUpperCase()),
                         UserPrivilege.valueOf(rs.getString(6).toUpperCase()),
                         rs.getString(7));
-                //search if user has a connection in signin table
-                stmt = con.prepareStatement(searchLogIn);
+                //search if user has more than 10 connection in signin table
+                stmt = con.prepareStatement(getLogInNumber);
                 stmt.setInt(1, user.getId());
                 rs = stmt.executeQuery();
-                if (rs.next()) {
-                    //search if user has more than 10 connection in signin table
-                    stmt = con.prepareStatement(getLogInNumber);
+                if (rs.getInt(1) > 9) {
+                    //delete the last connection of the user from signin table
+                    stmt = con.prepareStatement(deleteLogIn);
                     stmt.setInt(1, user.getId());
                     rs = stmt.executeQuery();
-                    if (rs.getInt(1)>10) {
-                        //delete the last connection of the user from signin table
-                        stmt = con.prepareStatement(deleteLogIn);
-                        stmt.setInt(1, user.getId());
-                        rs = stmt.executeQuery();
-                    }
                 }
                 //insert the connection in signin table
                 stmt = con.prepareStatement(getLogInNumber);
@@ -80,9 +74,9 @@ public class DAOServer implements Userable {
                 stmt.setInt(2, user.getId());
                 rs = stmt.executeQuery();
             }
-            }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
-        }finally {
+        } finally {
             LOGGER.info("Server Login close connection");
             try {
                 pool.returnConnection(con);
@@ -90,10 +84,9 @@ public class DAOServer implements Userable {
                 Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-            return user;
-            // TODO
-        }
-    
+        return user;
+        // TODO
+    }
 
     /**
      * Get a user from userable signUp and creates it in the database
