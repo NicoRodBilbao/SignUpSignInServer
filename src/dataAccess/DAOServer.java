@@ -39,7 +39,7 @@ public class DAOServer implements Userable {
      * @return user
      * @throws exceptions.UserDoesNotExistException
      */
-    public User login(String username) throws UserDoesNotExistException {
+ public User login(String username) throws UserDoesNotExistException {
         User user = null;
         try {
             con = pool.getConnection();
@@ -71,7 +71,14 @@ public class DAOServer implements Userable {
                 stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
                 stmt.setInt(2, user.getId());
                 rs = stmt.executeQuery();
+            } else {
+                //If user does not exist
+                throw new UserDoesNotExistException();
             }
+        } catch (SQLException e) {
+            LOGGER.severe(e.getMessage());
+        } catch (ServerException ex) {
+            Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
         } finally {
@@ -94,7 +101,6 @@ public class DAOServer implements Userable {
      * @throws exceptions.UserAlreadyExistsException
      */
     public void signUp(User user) throws EmailAlreadyExistsException, UserAlreadyExistsException {
-
         try {
             con = pool.getConnection();
             LOGGER.info("Server SignUp open connection");
@@ -127,6 +133,11 @@ public class DAOServer implements Userable {
                     stmt.executeUpdate();
                 }
             }
+
+        } catch (SQLException e) {
+            LOGGER.severe(e.getMessage());
+        } catch (ServerException ex) {
+            Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
         } finally {
