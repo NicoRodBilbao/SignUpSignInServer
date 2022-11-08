@@ -36,25 +36,27 @@ public class ServerThread extends Thread {
     
     
     
-    public ServerThread( ServerSocket serverSocket, Socket socket, model.Package pack) {
+    public ServerThread(Socket socket) {
         try {
-            this.pack = pack;
+            
+            
             // Creating the vatiables necessary for the connection with the server
-            skServer = serverSocket;
-            // Waits for a client to connect
-            LOGGER.info("Waiting for a client to respond...");
             skClient = socket;
-            LOGGER.info("Connected to a client.");
             output = skClient.getOutputStream();
             auxOut = new ObjectOutputStream(output);
             input = skClient.getInputStream();
             auxIn = new ObjectInputStream(input);
+            pack = (model.Package) auxIn.readObject();
             LOGGER.info("No exceptions.");
         } catch (IOException ex) {
+            Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
+            
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    @Override
     public void run() {
         LOGGER.info("Starting controller.");
         try {
@@ -64,14 +66,12 @@ public class ServerThread extends Thread {
                 if (pack.getAction().equals(Action.LOGIN)) {
                     try {
                         pack.setUser(new DAOServer().login(pack.getUser().getLogin()));
-                        
                     } catch (IncorrectUserException ex) {
                         Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (IncorrectPasswordException ex) {
                         Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     pack.setMessage(Message.OK);
-                    System.out.println("Hemos llegao");
                 }
                 // Signup case
                 if (pack.getAction().equals(Action.REGISTER)) {
