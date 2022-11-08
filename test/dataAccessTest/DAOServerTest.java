@@ -68,7 +68,7 @@ public class DAOServerTest {
     }
 
     /**
-     * Test UserAlreadyExistsException
+     * Test SignUp UserAlreadyExistsException
      */
     @Test
     public void testSignUpUserAlreadyExistsException() {
@@ -92,7 +92,7 @@ public class DAOServerTest {
     }
 
     /**
-     * Test EmailAlreadyExistsException
+     * Test SignUp EmailAlreadyExistsException
      */
     @Test
     public void testSignUpEmailAlreadyExistsException() {
@@ -136,7 +136,7 @@ public class DAOServerTest {
     }
 
     /**
-     * Test LogIn from the class DAOServer
+     * Test LogIn UserDoesNotExistException
      */
     @Test
     public void testLoginUserDoesNotExistException() {
@@ -155,7 +155,7 @@ public class DAOServerTest {
     }
 
     /**
-     * Test LogIn from the class DAOServer
+     * Test LogIn IncorrectUserException
      */
     @Test
     public void testLoginIncorrectUserException() {
