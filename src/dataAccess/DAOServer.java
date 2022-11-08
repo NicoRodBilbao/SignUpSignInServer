@@ -27,8 +27,8 @@ public class DAOServer implements Userable {
     final String createLogIn = "INSERT INTO signin (lastSignIn, userId) VALUES (?, ?)";
     final String searchLogIn = "SELECT * FROM signin WHERE userId = ?";
     final String deleteLogIn = "DELETE from signin where userId = ? ORDER BY lastSignIn ASC LIMIT 1;";
-    final String getLogInNumber = "SELECT COUNT(*) FROM signin WHERE userId = ?;";
-
+    final String getLogInNumber = "SELECT COUNT(*) FROM signin WHERE userId = ?;"; 
+    
     private static Pool pool = Pool.getPool();
     private Connection con;
     private PreparedStatement stmt;
