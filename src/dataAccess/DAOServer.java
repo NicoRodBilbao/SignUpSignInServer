@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import pool.Pool;
 
-
 /**
  *
  * @author Emil Nuñez
@@ -27,8 +26,8 @@ public class DAOServer implements Userable {
     final String createLogIn = "INSERT INTO signin (lastSignIn, userId) VALUES (?, ?)";
     final String searchLogIn = "SELECT * FROM signin WHERE userId = ?";
     final String deleteLogIn = "DELETE from signin where userId = ? ORDER BY lastSignIn ASC LIMIT 1;";
-    final String getLogInNumber = "SELECT COUNT(*) FROM signin WHERE userId = ?;"; 
-    
+    final String getLogInNumber = "SELECT COUNT(*) FROM signin WHERE userId = ?;";
+
     private static Pool pool = Pool.getPool();
     private Connection con;
     private PreparedStatement stmt;
@@ -40,14 +39,14 @@ public class DAOServer implements Userable {
      * @param username
      * @return user
      * @throws exceptions.UserDoesNotExistException
-     * @throws exceptions.IncorrectUserException
      */
     
-    public User login(String username) throws UserDoesNotExistException, IncorrectUserException {
+    public User login(String username) throws UserDoesNotExistException {
         User user = null;
         try {
             con = pool.getConnection();
             LOGGER.info("Server Login open connection");
+            //search if user already exist 
             stmt = con.prepareStatement(searchUser);
             stmt.setString(1, username);
             rs = stmt.executeQuery();
@@ -59,24 +58,28 @@ public class DAOServer implements Userable {
                         UserStatus.valueOf(rs.getString(5).toUpperCase()),
                         UserPrivilege.valueOf(rs.getString(6).toUpperCase()),
                         rs.getString(7));
+                //search if user has a connection in signin table
                 stmt = con.prepareStatement(searchLogIn);
                 stmt.setInt(1, user.getId());
                 rs = stmt.executeQuery();
-            }
                 if (rs.next()) {
+                    //search if user has more than 10 connection in signin table
                     stmt = con.prepareStatement(getLogInNumber);
                     stmt.setInt(1, user.getId());
                     rs = stmt.executeQuery();
-                    if (rs.next()) {
+                    if (rs.getInt(1)>10) {
+                        //delete the last connection of the user from signin table
                         stmt = con.prepareStatement(deleteLogIn);
                         stmt.setInt(1, user.getId());
                         rs = stmt.executeQuery();
                     }
                 }
+                //insert the connection in signin table
                 stmt = con.prepareStatement(getLogInNumber);
                 stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
                 stmt.setInt(2, user.getId());
                 rs = stmt.executeQuery();
+            }
             }catch (Exception e) {
             LOGGER.severe(e.getMessage());
         }finally {
@@ -128,8 +131,8 @@ public class DAOServer implements Userable {
                     stmt.setString(1, user.getLogin());
                     stmt.setString(2, user.getEmail());
                     stmt.setString(3, user.getFullName());
-                    stmt.setString(4, user.getStatus().toString());  //probar a ver si funciona, no tengo ni p idea
-                    stmt.setString(5, user.getPrivilege().toString()); //igual que arriba            
+                    stmt.setString(4, user.getStatus().toString());  
+                    stmt.setString(5, user.getPrivilege().toString());         
                     stmt.setString(6, user.getPassword());
                     stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
                     stmt.executeUpdate();
@@ -146,5 +149,4 @@ public class DAOServer implements Userable {
             }
         }
     }
-
 }
