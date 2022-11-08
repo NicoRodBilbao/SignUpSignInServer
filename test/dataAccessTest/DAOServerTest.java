@@ -8,7 +8,6 @@ package dataAccessTest;
 import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import dataAccess.DAOServer;
 import exceptions.EmailAlreadyExistsException;
-import exceptions.IncorrectUserException;
 import exceptions.UserAlreadyExistsException;
 import exceptions.UserDoesNotExistException;
 import java.util.logging.Level;
@@ -59,16 +58,14 @@ public class DAOServerTest {
            prueba = instance.login("Prueba9");
         } catch (UserDoesNotExistException ex) {
             Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IncorrectUserException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
         
         assertEquals("user sign up well", prueba.getLogin(), "Prueba9");
         
     }
 
     /**
-     * Test SignUp UserAlreadyExistsException
+     * Test UserAlreadyExistsException
      */
     @Test
     public void testSignUpUserAlreadyExistsException() {
@@ -92,7 +89,7 @@ public class DAOServerTest {
     }
 
     /**
-     * Test SignUp EmailAlreadyExistsException
+     * Test EmailAlreadyExistsException
      */
     @Test
     public void testSignUpEmailAlreadyExistsException() {
@@ -128,15 +125,13 @@ public class DAOServerTest {
             user = instance.login(username);
         } catch (UserDoesNotExistException ex) {
             Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IncorrectUserException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
         } 
         assertEquals("user log in well", user.getLogin(), username);
 
     }
 
     /**
-     * Test LogIn UserDoesNotExistException
+     * Test LogIn from the class DAOServer
      */
     @Test
     public void testLoginUserDoesNotExistException() {
@@ -149,13 +144,11 @@ public class DAOServerTest {
         } catch (UserDoesNotExistException ex) {
             Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
             assertEquals("User do not exists error throws", "ERROR: The username does not match any existent User.", ex.getMessage());
-        } catch (IncorrectUserException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
 
     /**
-     * Test LogIn IncorrectUserException
+     * Test LogIn from the class DAOServer
      */
     @Test
     public void testLoginIncorrectUserException() {
@@ -167,10 +160,7 @@ public class DAOServerTest {
             user = instance.login(username);
         } catch (UserDoesNotExistException ex) {
             Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IncorrectUserException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("Incorrect user error throws", "ERROR: The username is incorrect or has an incorrect format.\n\n(Avoid using spaces)", ex.getMessage());
-        } 
+        }
 
     }
 
