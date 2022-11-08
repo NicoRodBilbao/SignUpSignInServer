@@ -79,8 +79,6 @@ public class DAOServer implements Userable {
             LOGGER.severe(e.getMessage());
         } catch (ServerException ex) {
             Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
         } finally {
             LOGGER.info("Server Login close connection");
             try {
@@ -138,8 +136,6 @@ public class DAOServer implements Userable {
             LOGGER.severe(e.getMessage());
         } catch (ServerException ex) {
             Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
         } finally {
             LOGGER.info("Server SignUp close connection");
             try {
