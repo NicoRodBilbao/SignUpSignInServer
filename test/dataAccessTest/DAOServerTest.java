@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author 2dam
+ * @author Emil Nuñez
  */
 public class DAOServerTest {
     
