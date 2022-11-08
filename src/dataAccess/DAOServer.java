@@ -24,7 +24,6 @@ public class DAOServer implements Userable {
     final String searchEmail = "SELECT * FROM usertolog WHERE email = ?";
     final String searchUserFromUsername = "SELECT * FROM usertolog WHERE login = ?";
     final String createLogIn = "INSERT INTO signin (lastSignIn, userId) VALUES (?, ?)";
-    final String searchLogIn = "SELECT * FROM signin WHERE userId = ?";
     final String deleteLogIn = "DELETE from signin where userId = ? ORDER BY lastSignIn ASC LIMIT 1;";
     final String getLogInNumber = "SELECT COUNT(*) FROM signin WHERE userId = ?;";
 
@@ -40,7 +39,6 @@ public class DAOServer implements Userable {
      * @return user
      * @throws exceptions.UserDoesNotExistException
      */
-    
     public User login(String username) throws UserDoesNotExistException {
         User user = null;
         try {
@@ -66,10 +64,10 @@ public class DAOServer implements Userable {
                     //delete the last connection of the user from signin table
                     stmt = con.prepareStatement(deleteLogIn);
                     stmt.setInt(1, user.getId());
-                    rs = stmt.executeQuery();
+                    stmt.executeUpdate();
                 }
                 //insert the connection in signin table
-                stmt = con.prepareStatement(getLogInNumber);
+                stmt = con.prepareStatement(createLogIn);
                 stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
                 stmt.setInt(2, user.getId());
                 rs = stmt.executeQuery();
@@ -95,16 +93,14 @@ public class DAOServer implements Userable {
      * @throws exceptions.EmailAlreadyExistsException
      * @throws exceptions.UserAlreadyExistsException
      */
-    
     public void signUp(User user) throws EmailAlreadyExistsException, UserAlreadyExistsException {
 
         try {
-            user = null;
             con = pool.getConnection();
             LOGGER.info("Server SignUp open connection");
             //we search if there is an user with the same id
             stmt = con.prepareStatement(searchUser);
-            stmt.setInt(1, user.getId());
+            stmt.setString(1, user.getLogin());
             rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -124,8 +120,8 @@ public class DAOServer implements Userable {
                     stmt.setString(1, user.getLogin());
                     stmt.setString(2, user.getEmail());
                     stmt.setString(3, user.getFullName());
-                    stmt.setString(4, user.getStatus().toString());  
-                    stmt.setString(5, user.getPrivilege().toString());         
+                    stmt.setString(4, user.getStatus().toString());
+                    stmt.setString(5, user.getPrivilege().toString());
                     stmt.setString(6, user.getPassword());
                     stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
                     stmt.executeUpdate();
@@ -142,4 +138,6 @@ public class DAOServer implements Userable {
             }
         }
     }
+
 }
+
