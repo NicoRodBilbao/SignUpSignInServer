@@ -1,7 +1,6 @@
 package signupsigninserver;
 
 import controller.Controller;
-import controller.ServerThread;
 
 /**
  *

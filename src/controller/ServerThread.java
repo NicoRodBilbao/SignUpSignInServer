@@ -13,7 +13,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Action;
@@ -25,8 +24,6 @@ import model.Message;
  */
 public class ServerThread extends Thread {
 
-    static final String HOST = "localhost"; // TODO read from properties file
-    static final int PORT = 9000; // TODO read from properties file
     private static Socket skClient;
     private static ServerSocket skServer;
     protected static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
@@ -36,32 +33,35 @@ public class ServerThread extends Thread {
     private InputStream input;
     private ObjectInputStream auxIn;
     public static boolean active = true;
-
-    public ServerThread() {
+    
+    
+    
+    public ServerThread(Socket socket) {
         try {
+            
+            
             // Creating the vatiables necessary for the connection with the server
-            skServer = new ServerSocket(PORT);
-            // Waits for a client to connect
-            LOGGER.info("Waiting for a client to respond...");
-            skClient = skServer.accept();
-            LOGGER.info("Connected to a client.");
+            skClient = socket;
             output = skClient.getOutputStream();
             auxOut = new ObjectOutputStream(output);
             input = skClient.getInputStream();
             auxIn = new ObjectInputStream(input);
+            pack = (model.Package) auxIn.readObject();
             LOGGER.info("No exceptions.");
         } catch (IOException ex) {
+            Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
+            
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    @Override
     public void run() {
         LOGGER.info("Starting controller.");
         try {
 
             while (active) {
-                // Receives a Package 
-                pack = (model.Package) auxIn.readObject();
                 // Login case
                 if (pack.getAction().equals(Action.LOGIN)) {
                     try {
@@ -80,12 +80,11 @@ public class ServerThread extends Thread {
                 }
                 active = false;
                 auxOut.writeObject(pack);
+                
             }
         } catch (IOException e) { // IOException
             LOGGER.severe("IOExcetion regarding the socket." + e.getMessage());
-        } catch (ClassNotFoundException e) { // ClassNotFoundException
-            LOGGER.severe("The class was not found." + e.getMessage());
-        } catch (UserDoesNotExistException e) { // The user couldn't be found on the database
+        }catch (UserDoesNotExistException e) { // The user couldn't be found on the database
             LOGGER.severe(e.getMessage());
             pack.setMessage(Message.USERDOESNOTEXIST);
         } catch(EmailAlreadyExistsException e) { // The email already exists on the database
@@ -97,7 +96,7 @@ public class ServerThread extends Thread {
         }  finally {
             try {
                 auxOut.writeObject(pack);
-                skClient.close();
+                this.interrupt();
             } catch (IOException e) { // IOException
                 LOGGER.severe("IOExcetion regarding the socket." + e.getMessage());
             }
