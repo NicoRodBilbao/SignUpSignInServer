@@ -7,6 +7,7 @@ import interfaces.Userable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.logging.Level;
@@ -40,15 +41,18 @@ public class DAOServer implements Userable {
      * @return user
      * @throws exceptions.UserDoesNotExistException
      */
- public User login(String username) throws UserDoesNotExistException {
+    public User login(String username) throws UserDoesNotExistException {
         User user = null;
         try {
+            System.out.println("hola0");
             con = pool.getConnection();
             LOGGER.info("Server Login open connection");
             //search if user already exist 
             stmt = con.prepareStatement(searchUser);
             stmt.setString(1, username);
+            System.out.println("hola1");
             rs = stmt.executeQuery();
+            System.out.println("hola");
             if (rs.next()) {
                 user = new User(rs.getInt(1),
                         rs.getString(2),
@@ -57,6 +61,7 @@ public class DAOServer implements Userable {
                         UserStatus.valueOf(rs.getString(5).toUpperCase()),
                         UserPrivilege.valueOf(rs.getString(6).toUpperCase()),
                         rs.getString(7));
+                System.out.println(user.getFullName());
                 //search if user has more than 10 connection in signin table
                 stmt = con.prepareStatement(getLogInNumber);
                 stmt.setInt(1, user.getId());
@@ -80,7 +85,7 @@ public class DAOServer implements Userable {
             LOGGER.severe(e.getMessage());
         } catch (ServerException ex) {
             Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
+        }finally {
             LOGGER.info("Server Login close connection");
             try {
                 pool.returnConnection(con);
