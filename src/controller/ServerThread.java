@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Action;
@@ -24,15 +25,14 @@ import model.Message;
  */
 public class ServerThread extends Thread {
 
-    private static Socket skClient;
-    private static ServerSocket skServer;
+    private static  Socket skClient;
     protected static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     private model.Package pack;
     private OutputStream output;
     private ObjectOutputStream auxOut;
     private InputStream input;
     private ObjectInputStream auxIn;
-    public static boolean active = true;
+    public static  boolean active = true;
     
     
     
@@ -48,6 +48,8 @@ public class ServerThread extends Thread {
             auxIn = new ObjectInputStream(input);
             pack = (model.Package) auxIn.readObject();
             LOGGER.info("No exceptions.");
+        } catch (SocketException se){
+            Logger.getLogger(Controller.class.getName()).log(Level.INFO, "Client disconnected");
         } catch (IOException ex) {
             Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
             
@@ -63,9 +65,16 @@ public class ServerThread extends Thread {
         try {
             
                 // Login case
+                
                 if (pack.getAction().equals(Action.LOGIN)) {
+<<<<<<< HEAD
                         pack.setUser(new DAOServer().login(pack.getUser().getLogin()));
                         
+=======
+                    
+                        pack.setUser(new DAOServer().login(pack.getUser().getLogin()));
+                    
+>>>>>>> ae1871756ee65f5bab7f5de42e1ad7e86bdceafd
                     pack.setMessage(Message.OK);
                 }
                 // Signup case
@@ -74,6 +83,13 @@ public class ServerThread extends Thread {
                     pack.setMessage(Message.OK);
                 
             }
+<<<<<<< HEAD
+=======
+        } catch (SocketException | NullPointerException ne){
+            Logger.getLogger(Controller.class.getName()).log(Level.INFO, "Client disconnected");
+        } catch (IOException e) { // IOException
+            LOGGER.severe("IOExcetion regarding the socket." + e.getMessage());
+>>>>>>> ae1871756ee65f5bab7f5de42e1ad7e86bdceafd
         }catch (UserDoesNotExistException e) { // The user couldn't be found on the database
             LOGGER.severe(e.getMessage());
             pack.setMessage(Message.USERDOESNOTEXIST);

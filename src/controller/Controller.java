@@ -1,6 +1,5 @@
 package controller;
 
-import exceptions.ServerException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -9,6 +8,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -25,7 +25,8 @@ public class Controller {
 
     private static Stack<ServerThread> freeThreads = new Stack<ServerThread>();
     private static ArrayList<ServerThread> usedThreads = new ArrayList<ServerThread>();
-    private Integer threadLimit = 10;
+
+    public static volatile Integer threadCount = 0;
     protected final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     public static boolean isRunning = true;
     private ServerSocket serverSocket;
@@ -38,7 +39,9 @@ public class Controller {
     protected ResourceBundle configFile = ResourceBundle.getBundle("dataAccess.config");
 
     protected Integer PORT = Integer.parseInt(configFile.getString("PORT"));
+    private final Integer THREADLIMIT = Integer.parseInt(configFile.getString("CLIENT_LIMIT"));
 
+<<<<<<< HEAD
     public static volatile int threadCount = 0;
     
     private void createThread(Socket skClient) {
@@ -46,27 +49,19 @@ public class Controller {
             ServerThread thr = new ServerThread(skClient);
             threadCount++;
             thr.start();
-        }
-    }
+=======
+    private Optional<ServerThread> createThread(Socket skClient) {
 
-    private ServerThread getThread() {
-        // Check if there are any free connections
-        // create one if the stack is empty
-        if (freeThreads.empty()) {
-            //this.createThread(1);
-        }
-        // Move connection from free to used and return it
-        ServerThread thr = freeThreads.pop();
-        if (thr == null) {
-            LOGGER.severe("There are no free threads");
-        }
-        usedThreads.add(thr);
-        return thr;
+        Optional<ServerThread> newThread = Optional.empty();
 
-    }
+        if (threadCount < THREADLIMIT) {
+            newThread = Optional.of(new ServerThread(skClient));
+            threadCount++;
+>>>>>>> ae1871756ee65f5bab7f5de42e1ad7e86bdceafd
+        }
 
-    private void startAllThreads() {
-        freeThreads.forEach(thr -> thr.start());
+        return newThread;
+
     }
 
     private void stopAllThreads() {
@@ -74,28 +69,35 @@ public class Controller {
         usedThreads.forEach(thr -> thr.interrupt());
     }
 
-    private void removeDeadThreads() {
-        freeThreads.removeIf(thr -> !thr.isAlive());
-        usedThreads.removeIf(thr -> !thr.isAlive());
-    }
-
     public void run() {
 
         try {
             serverSocket = new ServerSocket(PORT);
-            //TextInterface tui = new TextInterface();
-            //tui.start();
+            TextInterface tui = new TextInterface();
+            tui.start();
 
             while (isRunning) {
                 socket = serverSocket.accept();
+<<<<<<< HEAD
                 this.createThread(socket);
+=======
+                Optional<ServerThread> thr = this.createThread(socket);
+                if(thr.isPresent())
+                    thr.get().start();
+                else
+                    Logger.getLogger(Controller.class
+                        .getName()).log(Level.SEVERE, null, "Cannot accept any more clients");
+                Logger.getLogger(Controller.class
+                    .getName()).log(Level.INFO, null, threadCount);
+>>>>>>> ae1871756ee65f5bab7f5de42e1ad7e86bdceafd
             }
             socket.close();
             serverSocket.close();
             this.stopAllThreads();
 
         } catch (IOException ex) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Controller.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
