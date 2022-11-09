@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -26,7 +25,6 @@ public class Controller {
     private static Stack<ServerThread> freeThreads = new Stack<ServerThread>();
     private static ArrayList<ServerThread> usedThreads = new ArrayList<ServerThread>();
 
-    public static volatile Integer threadCount = 0;
     protected final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     public static boolean isRunning = true;
     private ServerSocket serverSocket;
@@ -41,7 +39,6 @@ public class Controller {
     protected Integer PORT = Integer.parseInt(configFile.getString("PORT"));
     private final Integer THREADLIMIT = Integer.parseInt(configFile.getString("CLIENT_LIMIT"));
 
-<<<<<<< HEAD
     public static volatile int threadCount = 0;
     
     private void createThread(Socket skClient) {
@@ -49,19 +46,7 @@ public class Controller {
             ServerThread thr = new ServerThread(skClient);
             threadCount++;
             thr.start();
-=======
-    private Optional<ServerThread> createThread(Socket skClient) {
-
-        Optional<ServerThread> newThread = Optional.empty();
-
-        if (threadCount < THREADLIMIT) {
-            newThread = Optional.of(new ServerThread(skClient));
-            threadCount++;
->>>>>>> ae1871756ee65f5bab7f5de42e1ad7e86bdceafd
         }
-
-        return newThread;
-
     }
 
     private void stopAllThreads() {
@@ -78,18 +63,7 @@ public class Controller {
 
             while (isRunning) {
                 socket = serverSocket.accept();
-<<<<<<< HEAD
                 this.createThread(socket);
-=======
-                Optional<ServerThread> thr = this.createThread(socket);
-                if(thr.isPresent())
-                    thr.get().start();
-                else
-                    Logger.getLogger(Controller.class
-                        .getName()).log(Level.SEVERE, null, "Cannot accept any more clients");
-                Logger.getLogger(Controller.class
-                    .getName()).log(Level.INFO, null, threadCount);
->>>>>>> ae1871756ee65f5bab7f5de42e1ad7e86bdceafd
             }
             socket.close();
             serverSocket.close();
