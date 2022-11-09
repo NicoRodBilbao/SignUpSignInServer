@@ -39,22 +39,13 @@ public class Controller {
 
     protected Integer PORT = Integer.parseInt(configFile.getString("PORT"));
 
-    private void createThread(int n, Socket skClient) {
-
-        for (int i = 0; i < n; i++) {
-            try {
-                ServerThread newThread = new ServerThread(skClient);
-                freeThreads.push(newThread);
-                if (freeThreads.size() + usedThreads.size() >= threadLimit) {
-                    throw new ServerException();
-                }
-            } catch (ServerException e) {
-                // TODO Exception parametrization
-                // connection limit surpassed
-                while (freeThreads.size() > threadLimit) {
-                    freeThreads.pop().interrupt();
-                }
-            }
+    public static volatile int threadCount = 0;
+    
+    private void createThread(Socket skClient) {
+        if (threadCount < 10) {
+            ServerThread thr = new ServerThread(skClient);
+            threadCount++;
+            thr.start();
         }
     }
 
@@ -97,8 +88,7 @@ public class Controller {
 
             while (isRunning) {
                 socket = serverSocket.accept();
-                ServerThread thr = new ServerThread(socket);
-                thr.start();
+                this.createThread(socket);
             }
             socket.close();
             serverSocket.close();

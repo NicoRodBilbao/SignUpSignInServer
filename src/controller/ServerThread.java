@@ -59,31 +59,21 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         LOGGER.info("Starting controller.");
+        
         try {
-
-            while (active) {
+            
                 // Login case
                 if (pack.getAction().equals(Action.LOGIN)) {
-                    try {
                         pack.setUser(new DAOServer().login(pack.getUser().getLogin()));
-                    } catch (IncorrectUserException ex) {
-                        Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IncorrectPasswordException ex) {
-                        Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                        
                     pack.setMessage(Message.OK);
                 }
                 // Signup case
                 if (pack.getAction().equals(Action.REGISTER)) {
                     new DAOServer().signUp(pack.getUser());
                     pack.setMessage(Message.OK);
-                }
-                active = false;
-                auxOut.writeObject(pack);
                 
             }
-        } catch (IOException e) { // IOException
-            LOGGER.severe("IOExcetion regarding the socket." + e.getMessage());
         }catch (UserDoesNotExistException e) { // The user couldn't be found on the database
             LOGGER.severe(e.getMessage());
             pack.setMessage(Message.USERDOESNOTEXIST);
@@ -96,6 +86,7 @@ public class ServerThread extends Thread {
         }  finally {
             try {
                 auxOut.writeObject(pack);
+                Controller.threadCount--;
                 this.interrupt();
             } catch (IOException e) { // IOException
                 LOGGER.severe("IOExcetion regarding the socket." + e.getMessage());
