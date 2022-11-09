@@ -25,7 +25,7 @@ public class PoolTest {
     public void testGetPool_0args() {
         Pool pool = Pool.getPool();
         assertNotNull(pool);
-        AssertEquals(0, pool.getFreeConnectionCount());
+        assertEquals(0, pool.getFreeConnectionCount());
     }
 
     /**
@@ -45,7 +45,7 @@ public class PoolTest {
     public void testGetFreeConnectionCount() {
         Pool pool = Pool.getPool();
         assertNotNull(pool);
-        assertEquals(2, pool.getFreeConnectionCount());
+        assertEquals(1, pool.getFreeConnectionCount());
     }
 
     /**
@@ -55,7 +55,7 @@ public class PoolTest {
     public void testGetUsedConnectionCount() {
         Pool pool = Pool.getPool();
         assertNotNull(pool);
-        assertEquals(0, pool.getFreeConnectionCount());
+        assertEquals(0, pool.getUsedConnectionCount());
     }
 
     /**
@@ -77,7 +77,7 @@ public class PoolTest {
         Pool pool = Pool.getPool();
         Connection con = pool.getConnection();
         assertEquals(0, pool.getFreeConnectionCount());
-        pool.returnConnection();
+        pool.returnConnection(con);
         assertEquals(1, pool.getFreeConnectionCount());
     }
 
