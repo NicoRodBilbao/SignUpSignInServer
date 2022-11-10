@@ -1,8 +1,5 @@
 package dataAccess;
 
-import exceptions.*;
-import model.*;
-import interfaces.Userable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,12 +8,17 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import pool.Pool;
 
+import model.*;
+import exceptions.*;
+import interfaces.Userable;
+
 /**
- * This class connects to our MySQL server and
- * performs multiple actions
- * @author Emil Nuñez
+ * This class has the usability of logging up and signing in to a server.
+ *
+ * @author Emil Nuñez / Nicolás Rodríguez
  */
 public class DAOServer implements Userable {
 
@@ -37,10 +39,11 @@ public class DAOServer implements Userable {
     private ResultSet rs;
 
     /**
-     * Get a username from userable login and return the user from the database
+     * This method gets a username from userable logIn and return a user with
+     * the same login.
      *
-     * @param username
-     * @return user
+     * @param username the username of the user to be logged in
+     * @return user the user with the login introduced
      * @throws exceptions.UserDoesNotExistException
      */
     public User login(String username) throws UserDoesNotExistException {
@@ -65,7 +68,7 @@ public class DAOServer implements Userable {
                 stmt = con.prepareStatement(getLogInNumber);
                 stmt.setInt(1, user.getId());
                 rs = stmt.executeQuery();
-                if (rs.getInt(1) > 9) {
+                if (rs.next() && rs.getInt(1) > 9) {
                     //delete the last connection of the user from signin table
                     stmt = con.prepareStatement(deleteLogIn);
                     stmt.setInt(1, user.getId());
@@ -75,7 +78,7 @@ public class DAOServer implements Userable {
                 stmt = con.prepareStatement(createLogIn);
                 stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
                 stmt.setInt(2, user.getId());
-                rs = stmt.executeQuery();
+                stmt.executeUpdate();
             } else {
                 //If user does not exist
                 throw new UserDoesNotExistException();
@@ -84,7 +87,7 @@ public class DAOServer implements Userable {
             LOGGER.severe(e.getMessage());
         } catch (ServerException ex) {
             Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
-        }finally {
+        } finally {
             LOGGER.info("Server Login close connection");
             try {
                 pool.returnConnection(con);
@@ -93,16 +96,16 @@ public class DAOServer implements Userable {
             }
         }
         return user;
-        // TODO
     }
 
     /**
-     * Get a user from userable signUp and creates it in the database
+     * This method recieves a user and sends it to a server.
      *
-     * @param user
+     * @param user the user to be sent
      * @throws exceptions.EmailAlreadyExistsException
      * @throws exceptions.UserAlreadyExistsException
      */
+    @Override
     public void signUp(User user) throws EmailAlreadyExistsException, UserAlreadyExistsException {
         try {
             con = pool.getConnection();
@@ -152,4 +155,3 @@ public class DAOServer implements Userable {
     }
 
 }
-

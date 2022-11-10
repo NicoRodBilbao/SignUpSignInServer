@@ -8,8 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Main class for our Server Application contains the main method
- *
+ * Main class for our Server Application
+ * contains the main method
  * @author Nicolas Rodriguez
  */
 public class Application {

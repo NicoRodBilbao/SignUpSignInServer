@@ -1,23 +1,22 @@
 package controller;
 
-import dataAccess.DAOServer;
-import exceptions.EmailAlreadyExistsException;
-import exceptions.IncorrectPasswordException;
-import exceptions.IncorrectUserException;
-import exceptions.UserAlreadyExistsException;
-import exceptions.UserDoesNotExistException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import dataAccess.DAOServer;
+
 import model.Action;
 import model.Message;
+import exceptions.EmailAlreadyExistsException;
+import exceptions.UserAlreadyExistsException;
+import exceptions.UserDoesNotExistException;
 
 /**
  * This class manages a request by a client
