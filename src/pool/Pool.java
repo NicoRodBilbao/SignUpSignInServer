@@ -3,8 +3,6 @@ package pool;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -39,7 +37,7 @@ public class Pool {
 	 * @throws exceptions.ServerException
 	 */
 	private Pool(int n) throws ServerException {
-		this.createConnections(n);
+		createConnections(n);
 	}
 
 	/**
@@ -131,7 +129,7 @@ public class Pool {
 			// Check if there are any free connections
 			// create one if the stack is empty
 			if (freeConnections.empty())
-				this.createConnections(1);
+				createConnections(1);
 			// Move connection from free to used and return it
 			Connection con = freeConnections.pop();
 			if (con == null)
