@@ -5,13 +5,11 @@
  */
 package signupsigninserver;
 
-import controller.Controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.input.KeyCode;
 
 /**
  * Detects user input from the console and
@@ -29,11 +27,11 @@ public class TextInterface extends Thread {
         
         while(Application.isRunning){
             try {
+            	System.out.println("Press enter to kill the server");
                 line = in.readLine();
-		System.out.println(line);
-                if(!line.equals("seguir")){
-                    Application.isRunning = false;
-                }
+                System.out.println(line);
+                Application.isRunning = false;
+                Application.shutdown();
             } catch (IOException ex) {
                 Logger.getLogger(TextInterface.class.getName()).log(Level.SEVERE, null, ex);
             }
