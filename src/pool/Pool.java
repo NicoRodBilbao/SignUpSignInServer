@@ -18,16 +18,16 @@ import java.util.logging.Logger;
  */
 public class Pool {
 
-	private Stack<Connection> freeConnections = new Stack<Connection>();
+	private static Stack<Connection> freeConnections = new Stack<Connection>();
 
-	private Stack<Connection> usedConnections = new Stack<Connection>();
+	private static Stack<Connection> usedConnections = new Stack<Connection>();
 
-	protected ResourceBundle configFile = ResourceBundle.getBundle("dataAccess.config");
-	protected String url = configFile.getString("URL"),
+	protected static ResourceBundle configFile = ResourceBundle.getBundle("dataAccess.config");
+	protected static String url = configFile.getString("URL"),
 			user = configFile.getString("USER"),
 			pass = configFile.getString("PASSWORD");
 
-	protected int connectionLimit = Integer.parseInt(configFile.getString("CONNECTION_LIMIT"));
+	protected static int connectionLimit = Integer.parseInt(configFile.getString("CONNECTION_LIMIT"));
 	
 	private static Pool pool = null;
 
@@ -67,6 +67,8 @@ public class Pool {
 	public static Pool getPool(int n) throws ServerException {
 		if(pool == null)
 			pool = new Pool(n);
+		else
+			createConnections(n);	
 		return pool;
 	}
 
@@ -91,7 +93,7 @@ public class Pool {
 	 * @param n
 	 * @throws ServerException
 	 */
-	private void createConnections(int n) throws ServerException {
+	private static void createConnections(int n) throws ServerException {
 		// Create the requested new connections
 		for (int i = 0; i < n; i++) {
 			try {
@@ -181,18 +183,23 @@ public class Pool {
 	 * @throws ServerException
 	 */
 	public synchronized void killAllConnections() throws ServerException {
-		// Get all open connections
-		List<Connection> allCons = this.getAllConnections();
-		// Iterate over all connections and close them
-		allCons.stream()
-				.forEach(con -> {
-					try {
-						con.close();
-					} catch (SQLException ex) {
-						Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
-					}
-				});
-		cleanClosedConnections();
+		freeConnections.forEach((con) -> {
+			try {
+				con.close();
+			} catch (SQLException ex) {
+				Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		});
+		usedConnections.forEach((con) -> {
+			try {
+				con.close();
+			} catch (SQLException ex) {
+				Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		});
+
+		freeConnections = new Stack<Connection>();
+		usedConnections = new Stack<Connection>();
 	}
 
 	/**
