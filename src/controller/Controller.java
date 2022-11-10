@@ -22,52 +22,58 @@ import signupsigninserver.TextInterface;
  */
 public class Controller {
 
-    private static Stack<ServerThread> freeThreads = new Stack<ServerThread>();
-    private static ArrayList<ServerThread> usedThreads = new ArrayList<ServerThread>();
-
     protected final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     public static boolean isRunning = true;
     private ServerSocket serverSocket;
     private Socket socket;
-    private InputStream input;
-    private ObjectInputStream auxIn;
-    private OutputStream os;
-    private ObjectOutputStream oos;
 
+    // Access the config file
     protected ResourceBundle configFile = ResourceBundle.getBundle("dataAccess.config");
 
+    // The port the server will be broadcasting in
     protected Integer PORT = Integer.parseInt(configFile.getString("PORT"));
-    private final Integer THREADLIMIT = Integer.parseInt(configFile.getString("CLIENT_LIMIT"));
+    // The thread limit (concurrent user limit)
+    private final Integer THREAD_LIMIT = Integer.parseInt(configFile.getString("CLIENT_LIMIT"));
 
+    // This counter is accesible from anywhere in the program
+    // we use it to check how many threads are currently running
     public static volatile int threadCount = 0;
     
+    /**
+    * Creates a thread only if the thread limit
+    * hasn't been reached
+    */
     private void createThread(Socket skClient) {
-        if (threadCount < 10) {
+        if (threadCount < THREAD_LIMIT) {
+            // Create the new thread with the socket recieved from
+            // the accepted connection
             ServerThread thr = new ServerThread(skClient);
+            // Increment thread count and start the thread
             threadCount++;
             thr.start();
         }
     }
 
-    private void stopAllThreads() {
-        freeThreads.forEach(thr -> thr.interrupt());
-        usedThreads.forEach(thr -> thr.interrupt());
-    }
-
+    /**
+    * Starts the controller thread
+    */
     public void run() {
-
         try {
             serverSocket = new ServerSocket(PORT);
+            // The TextInterface is used to shutdown the server
+            //when it's running from the command line
             TextInterface tui = new TextInterface();
             tui.start();
 
             while (isRunning) {
+                // accepts a client connection
                 socket = serverSocket.accept();
+                // creates a thread with the accepted connection
                 this.createThread(socket);
             }
+            // close the sockets when since the program is being shut down
             socket.close();
             serverSocket.close();
-            this.stopAllThreads();
 
         } catch (IOException ex) {
             Logger.getLogger(Controller.class

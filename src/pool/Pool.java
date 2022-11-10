@@ -164,25 +164,12 @@ public class Pool {
 	}
 
 	/**
-	 * Returns a list of all the open connections
-	 * 
-	 * @return
-	 */
-	private List<Connection> getAllConnections() {
-		List<Connection> allCons = new ArrayList<Connection>();
-		freeConnections.stream()
-				.forEach(con -> allCons.add(con));
-		usedConnections.stream()
-				.forEach(con -> allCons.add(con));
-		return allCons;
-	}
-
-	/**
-	 * Kill all connections
-	 * 
+	 * Close all the current connections and 
+	 * clear the freeConnections and usedConnections Stacks
 	 * @throws ServerException
 	 */
 	public synchronized void killAllConnections() throws ServerException {
+		// Close the free connections
 		freeConnections.forEach((con) -> {
 			try {
 				con.close();
@@ -190,6 +177,7 @@ public class Pool {
 				Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		});
+		// Close the used connections
 		usedConnections.forEach((con) -> {
 			try {
 				con.close();
@@ -198,32 +186,11 @@ public class Pool {
 			}
 		});
 
+		// Feed the previously existing connections to
+		//the Garbage Collector and create new empty stacks
 		freeConnections = new Stack<Connection>();
 		usedConnections = new Stack<Connection>();
 	}
 
-	/**
-	 * Removes all the closed connections from both
-	 * free and used collections
-	 */
-	private void cleanClosedConnections() {
-		// Remove closed free connections
-		freeConnections.forEach((con) -> {
-			try {
-				if (con.isClosed())
-					freeConnections.remove(con);
-			} catch (SQLException ex) {
-				Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		});
-		// Remove closed used connections
-		usedConnections.forEach((con) -> {
-			try {
-				if (con.isClosed())
-					usedConnections.remove(con);
-			} catch (SQLException ex) {
-				Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		});
-	}
 }
+
