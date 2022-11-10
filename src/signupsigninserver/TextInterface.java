@@ -21,15 +21,18 @@ import javafx.scene.input.KeyCode;
 public class TextInterface extends Thread {
     private BufferedReader in;
     private String line = "";
+
+    @Override
     public void run(){
 
         in = new BufferedReader(new InputStreamReader(System.in));
         
-        while(Controller.isRunning){
+        while(Application.isRunning){
             try {
                 line = in.readLine();
+		System.out.println(line);
                 if(!line.equals("seguir")){
-                    Controller.isRunning = false;
+                    Application.isRunning = false;
                 }
             } catch (IOException ex) {
                 Logger.getLogger(TextInterface.class.getName()).log(Level.SEVERE, null, ex);

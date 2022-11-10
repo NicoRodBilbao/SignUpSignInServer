@@ -1,15 +1,9 @@
 package controller;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import signupsigninserver.TextInterface;
@@ -20,7 +14,7 @@ import signupsigninserver.TextInterface;
  *
  * @author Markel & Joana
  */
-public class Controller {
+public class Controller extends Thread {
 
     protected final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     public static boolean isRunning = true;
@@ -57,13 +51,10 @@ public class Controller {
     /**
     * Starts the controller thread
     */
+    @Override
     public void run() {
         try {
             serverSocket = new ServerSocket(PORT);
-            // The TextInterface is used to shutdown the server
-            //when it's running from the command line
-            TextInterface tui = new TextInterface();
-            tui.start();
 
             while (isRunning) {
                 // accepts a client connection
@@ -71,6 +62,7 @@ public class Controller {
                 // creates a thread with the accepted connection
                 this.createThread(socket);
             }
+	    LOGGER.info("Shutting down the server...");
             // close the sockets when since the program is being shut down
             socket.close();
             serverSocket.close();
@@ -80,4 +72,5 @@ public class Controller {
                     .getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }
