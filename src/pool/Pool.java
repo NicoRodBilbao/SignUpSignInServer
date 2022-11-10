@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.Stack;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import exceptions.ServerException;
@@ -16,6 +15,8 @@ import exceptions.ServerException;
  * @author joana
  */
 public class Pool {
+	
+	protected static final Logger LOGGER = Logger.getLogger(Pool.class.getName());
 
 	private static Stack<Connection> freeConnections = new Stack<Connection>();
 
@@ -175,7 +176,7 @@ public class Pool {
 			try {
 				con.close();
 			} catch (SQLException ex) {
-				Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
+				LOGGER.severe(ex.getMessage());
 			}
 		});
 		// Close the used connections
@@ -183,7 +184,7 @@ public class Pool {
 			try {
 				con.close();
 			} catch (SQLException ex) {
-				Logger.getLogger(Pool.class.getName()).log(Level.SEVERE, null, ex);
+				LOGGER.severe(ex.getMessage());
 			}
 		});
 

@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import pool.Pool;
@@ -86,13 +85,13 @@ public class DAOServer implements Userable {
         } catch (SQLException e) {
             LOGGER.severe(e.getMessage());
         } catch (ServerException ex) {
-            Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
+			LOGGER.severe(ex.getMessage());
         } finally {
             LOGGER.info("Server Login close connection");
             try {
                 pool.returnConnection(con);
             } catch (ServerException ex) {
-                Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.severe(ex.getMessage());
             }
         }
         return user;
@@ -143,13 +142,13 @@ public class DAOServer implements Userable {
         } catch (SQLException e) {
             LOGGER.severe(e.getMessage());
         } catch (ServerException ex) {
-            Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
+			LOGGER.severe(ex.getMessage());
         } finally {
             LOGGER.info("Server SignUp close connection");
             try {
                 pool.returnConnection(con);
             } catch (ServerException ex) {
-                Logger.getLogger(DAOServer.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.severe(ex.getMessage());
             }
         }
     }

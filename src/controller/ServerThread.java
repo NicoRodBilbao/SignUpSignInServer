@@ -7,7 +7,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dataAccess.DAOServer;
@@ -47,14 +46,13 @@ public class ServerThread extends Thread {
             input = skClient.getInputStream();
             auxIn = new ObjectInputStream(input);
             pack = (model.Package) auxIn.readObject();
-            LOGGER.info("No exceptions.");
+            LOGGER.info("Thread created without exceptions.");
         } catch (SocketException se) {
-            Logger.getLogger(Controller.class.getName()).log(Level.INFO, "Client disconnected");
+            LOGGER.info("Client disconnected");
         } catch (IOException ex) {
-            Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
-
+            LOGGER.severe(ex.getMessage());
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
 

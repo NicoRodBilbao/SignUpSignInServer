@@ -8,7 +8,6 @@ package signupsigninserver;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -17,23 +16,20 @@ import java.util.logging.Logger;
  * @author Markel & Joana
  */
 public class TextInterface extends Thread {
-    private BufferedReader in;
-    private String line = "";
+	private BufferedReader in;
+	protected static final Logger LOGGER = Logger.getLogger(TextInterface.class.getName());
 
-    @Override
-    public void run(){
+	@Override
+	public void run(){
 
-        in = new BufferedReader(new InputStreamReader(System.in));
-        
-        while(Application.isRunning){
-            try {
-                line = in.readLine();
-                Application.isRunning = false;
-                Application.shutdown();
-            } catch (IOException ex) {
-                Logger.getLogger(TextInterface.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        }
-    }
+		in = new BufferedReader(new InputStreamReader(System.in));
+
+		try {
+			in.readLine();
+			Application.shutdown();
+		} catch (IOException ex) {
+			LOGGER.severe("Exception in the TUI: " + ex.getMessage());
+		}
+
+	}
 }

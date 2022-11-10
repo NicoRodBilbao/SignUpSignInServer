@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -65,8 +64,7 @@ public class Controller extends Thread {
 		} catch (SocketException se) {
 			LOGGER.info("Socket has been closed");
 		} catch (IOException ex) {
-			Logger.getLogger(Controller.class
-					.getName()).log(Level.SEVERE, null, ex);
+			LOGGER.severe(ex.getMessage());
 		}
 	}
 
