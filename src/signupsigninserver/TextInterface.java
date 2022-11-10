@@ -14,13 +14,15 @@ import java.util.logging.Logger;
 import javafx.scene.input.KeyCode;
 
 /**
- *
- * @author 2dam
+ * Detects user input from the console and
+ * activates a terminate flag
+ * @author Markel & Joana
  */
 public class TextInterface extends Thread {
     private BufferedReader in;
     private String line = "";
     public void run(){
+
         in = new BufferedReader(new InputStreamReader(System.in));
         
         while(Controller.isRunning){

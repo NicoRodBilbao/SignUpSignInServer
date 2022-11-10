@@ -23,6 +23,7 @@ import interfaces.Userable;
 public class DAOServer implements Userable {
 
     final protected Logger LOGGER = Logger.getLogger(DAOServer.class.getName());
+    // Multiple SQL queries
     final String createUser = "INSERT INTO usertolog (login, email, fullname, status, privilege, password, lastPasswordChange) VALUES (?, ?, ?, ?, ?, ?, ?)";
     final String searchUser = "SELECT * FROM usertolog WHERE login = ?";
     final String searchEmail = "SELECT * FROM usertolog WHERE email = ?";
@@ -31,6 +32,7 @@ public class DAOServer implements Userable {
     final String deleteLogIn = "DELETE from signin where userId = ? ORDER BY lastSignIn ASC LIMIT 1;";
     final String getLogInNumber = "SELECT COUNT(*) FROM signin WHERE userId = ?;";
 
+    // Get the pool object to use in this class
     private static Pool pool = Pool.getPool();
     private Connection con;
     private PreparedStatement stmt;
@@ -47,15 +49,13 @@ public class DAOServer implements Userable {
     public User login(String username) throws UserDoesNotExistException {
         User user = null;
         try {
-            System.out.println("hola0");
+            // Get the connection from the pool
             con = pool.getConnection();
             LOGGER.info("Server Login open connection");
             //search if user already exist 
             stmt = con.prepareStatement(searchUser);
             stmt.setString(1, username);
-            System.out.println("hola1");
             rs = stmt.executeQuery();
-            System.out.println("hola");
             if (rs.next()) {
                 user = new User(rs.getInt(1),
                         rs.getString(2),
@@ -64,7 +64,6 @@ public class DAOServer implements Userable {
                         UserStatus.valueOf(rs.getString(5).toUpperCase()),
                         UserPrivilege.valueOf(rs.getString(6).toUpperCase()),
                         rs.getString(7));
-                System.out.println(user.getFullName());
                 //search if user has more than 10 connection in signin table
                 stmt = con.prepareStatement(getLogInNumber);
                 stmt.setInt(1, user.getId());
