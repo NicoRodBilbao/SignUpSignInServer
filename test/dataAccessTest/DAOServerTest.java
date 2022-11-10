@@ -1,38 +1,39 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package dataAccessTest;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
-import dataAccess.DAOServer;
-import exceptions.EmailAlreadyExistsException;
-import exceptions.UserAlreadyExistsException;
-import exceptions.UserDoesNotExistException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.User;
-import model.UserPrivilege;
-import model.UserStatus;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import dataAccess.DAOServer;
+
+import model.User;
+import model.UserPrivilege;
+import model.UserStatus;
+import exceptions.EmailAlreadyExistsException;
+import exceptions.UserAlreadyExistsException;
+import exceptions.UserDoesNotExistException;
+import org.junit.runner.RunWith;
+import suite.Order;
+import suite.OrderedRunner;
+
 /**
+ * This class tests the correct functioning of the DAOServer class.
  *
- * @author 2dam
+ * @author Emil Nuñez / Nicolás Rodríguez
  */
+@RunWith(OrderedRunner.class)
 public class DAOServerTest {
+
+    protected final Logger LOGGER = Logger.getLogger(DAOServerTest.class.getName());
 
     public DAOServerTest() {
     }
 
     /**
-     * Test of login method, of class DAOServer.
+     * Tests the signUp method from the class DAOServer.
      */
-    /**
-     * Test SignUp from the class DAOServer
-     */
+    @Order (order=1)
     @Test
     public void testSignUp() {
         LOGGER.severe("testSignUp");
@@ -46,27 +47,16 @@ public class DAOServerTest {
         DAOServer instance = new DAOServer();
         try {
             instance.signUp(user);
-        } catch (EmailAlreadyExistsException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UserAlreadyExistsException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        } catch (EmailAlreadyExistsException | UserAlreadyExistsException ex) {
+            assertTrue(false);
         }
-        
-         User prueba = null;
-         
-        try {
-           prueba = instance.login("Prueba9");
-        } catch (UserDoesNotExistException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        
-        assertEquals("user sign up well", prueba.getLogin(), "Prueba9");
-        
     }
 
     /**
-     * Test UserAlreadyExistsException
+     * Tests that UserAlreadyExistsException is thrown.
      */
+    @Order (order=2)
     @Test
     public void testSignUpUserAlreadyExistsException() {
         LOGGER.severe("testSignUp");
@@ -80,41 +70,43 @@ public class DAOServerTest {
         DAOServer instance = new DAOServer();
         try {
             instance.signUp(user);
+            assertTrue(false);
         } catch (EmailAlreadyExistsException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(false);
         } catch (UserAlreadyExistsException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("ERROR: The username already exists.", ex.getMessage());
+            assertTrue(true);
         }
     }
 
     /**
-     * Test EmailAlreadyExistsException
+     * Tests that EmailAlreadyExistsException is thrown.
      */
+    @Order (order=3)
     @Test
     public void testSignUpEmailAlreadyExistsException() {
         LOGGER.severe("testSignUp");
         User user = new User(9,
+                "Prueba",
                 "Prueba9",
-                "Prueba9",
-                "Prueba8@gmail.com",
+                "Prueba9@gmail.com",
                 UserStatus.ENABLED,
                 UserPrivilege.USER,
                 "Prueba9");
         DAOServer instance = new DAOServer();
         try {
             instance.signUp(user);
+            assertTrue(false);
         } catch (EmailAlreadyExistsException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("ERROR: The email already exists.)", ex.getMessage());
+            assertTrue(true);
         } catch (UserAlreadyExistsException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(false);
         }
     }
 
     /**
-     * Test LogIn from the class DAOServer
+     * Tests the logIn method from the class DAOServer.
      */
+    @Order (order=4)
     @Test
     public void testLogin() {
         LOGGER.severe("testLogin");
@@ -123,16 +115,16 @@ public class DAOServerTest {
         User user = null;
         try {
             user = instance.login(username);
+            assertTrue(true);
         } catch (UserDoesNotExistException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        assertEquals("user log in well", user.getLogin(), username);
-
+            assertTrue(false);
+        }
     }
 
     /**
-     * Test LogIn from the class DAOServer
+     * Tests that UserDoesNotExistException is thrown.
      */
+    @Order (order=5)
     @Test
     public void testLoginUserDoesNotExistException() {
         LOGGER.severe("testLogin");
@@ -141,28 +133,9 @@ public class DAOServerTest {
         User user;
         try {
             user = instance.login(username);
+            assertTrue(false);
         } catch (UserDoesNotExistException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("User do not exists error throws", "ERROR: The username does not match any existent User.", ex.getMessage());
-        } 
-    }
-
-    /**
-     * Test LogIn from the class DAOServer
-     */
-    @Test
-    public void testLoginIncorrectUserException() {
-        LOGGER.severe("testLogin");
-        String username = "Prue ba9";
-        DAOServer instance = new DAOServer();
-        User user;
-        try {
-            user = instance.login(username);
-        } catch (UserDoesNotExistException ex) {
-            Logger.getLogger(DAOServerTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
         }
-
     }
-
 }
-

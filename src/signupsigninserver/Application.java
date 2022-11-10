@@ -5,7 +5,7 @@ import controller.Controller;
 /**
  * Main class for our Server Application
  * contains the main method
- * @author Nicolas Rodriguez
+ * @author Nicolás Rodríguez
  */
 public class Application {
 
@@ -14,8 +14,8 @@ public class Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       Controller controller = new Controller();
-       controller.run();
+        Controller controller = new Controller();
+        controller.run();
     }
-    
+
 }

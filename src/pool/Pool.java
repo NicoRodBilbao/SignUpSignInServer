@@ -1,6 +1,5 @@
 package pool;
 
-import exceptions.ServerException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,9 +10,11 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import exceptions.ServerException;
+
 /**
- * Manage connections to the database
- * 
+ * Manage connections to the database.
+ *
  * @author joana
  */
 public class Pool {
@@ -51,18 +52,20 @@ public class Pool {
 	* Returns the singleton class
 	* if it doesn't exist it's created
 	* @return the pool object
-	*/
-	public static Pool getPool() {
-		if(pool == null)
-			pool = new Pool();
-		return pool;
-	}
+     */
+    public static Pool getPool() {
+        if (pool == null) {
+            pool = new Pool();
+        }
+        return pool;
+    }
 
-	/*
-	* Returns the singleton class
-	* if it doesn't exist it's created
+    /*
+	* Returns the singleton class.
+	* If it doesn't exist it's created.
 	* @return the pool object
 	* @param n number of initial connections
+
 	*/
 	public static Pool getPool(int n) throws ServerException {
 		if(pool == null)
@@ -191,6 +194,5 @@ public class Pool {
 		freeConnections = new Stack<Connection>();
 		usedConnections = new Stack<Connection>();
 	}
-
 }
 
