@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import signupsigninserver.TextInterface;
 
 /**
@@ -25,7 +26,7 @@ public class Controller {
     private static Stack<ServerThread> freeThreads = new Stack<ServerThread>();
     private static ArrayList<ServerThread> usedThreads = new ArrayList<ServerThread>();
 
-    protected final Logger LOGGER = Logger.getLogger(Controller.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(Controller.class.getName());
     public static boolean isRunning = true;
     private ServerSocket serverSocket;
     private Socket socket;
@@ -40,7 +41,7 @@ public class Controller {
     private final Integer THREADLIMIT = Integer.parseInt(configFile.getString("CLIENT_LIMIT"));
 
     public static volatile int threadCount = 0;
-    
+
     private void createThread(Socket skClient) {
         if (threadCount < 10) {
             ServerThread thr = new ServerThread(skClient);

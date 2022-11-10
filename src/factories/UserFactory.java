@@ -4,6 +4,7 @@ import dataAccess.DAOServer;
 import interfaces.Userable;
 
 /**
+ * This class creates an interface Userable and instantiates it as DAOServer.
  *
  * @author Nicolas Rodriguez
  */
