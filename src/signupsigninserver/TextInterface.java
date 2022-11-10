@@ -27,9 +27,7 @@ public class TextInterface extends Thread {
         
         while(Application.isRunning){
             try {
-            	System.out.println("Press enter to kill the server");
                 line = in.readLine();
-                System.out.println(line);
                 Application.isRunning = false;
                 Application.shutdown();
             } catch (IOException ex) {
