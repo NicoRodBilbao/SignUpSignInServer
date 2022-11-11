@@ -148,7 +148,7 @@ public class Pool {
 	 * Receives a connection that's not being used anymore
 	 * and stores it to be used later
 	 * 
-	 * @param Connection
+	 * @param con
 	 */
 	public synchronized void returnConnection(Connection con) throws ServerException {
 		try {

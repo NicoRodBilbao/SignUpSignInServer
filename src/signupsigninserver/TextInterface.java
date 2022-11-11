@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 /**
  * Detects user input from the console and
  * activates a terminate flag
- * @author Markel & Joana
+ * @author Markel / Joana
  */
 public class TextInterface extends Thread {
 	private BufferedReader in;

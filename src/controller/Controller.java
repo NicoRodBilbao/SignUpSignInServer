@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  * This class will create and manage threads in order to access the databse from
  * multiple clients
  *
- * @author Markel & Joana
+ * @author Markel / Joana
  */
 public class Controller extends Thread {
 
