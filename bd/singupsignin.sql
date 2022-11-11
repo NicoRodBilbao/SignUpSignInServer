@@ -16,6 +16,14 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `signupsignin`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `signupsignin` /*!40100 DEFAULT CHARACTER SET utf8 */;
+
+USE `signupsignin`;
+
+--
 -- Table structure for table `signin`
 --
 
@@ -27,7 +35,7 @@ CREATE TABLE `signin` (
   `userId` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`userId`,`lastSignIn`),
   CONSTRAINT `signin_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `usertolog` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -56,7 +64,7 @@ CREATE TABLE `usertolog` (
   `password` varchar(30) NOT NULL DEFAULT '',
   `lastPasswordChange` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`,`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,4 +85,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-10-21 10:44:40
+-- Dump completed on 2022-11-10 13:00:46
